@@ -21,6 +21,8 @@
 <script>
   // ← שנה כאן את מזהה הגיליון שלך אם צריך
   const SHEET_ID = '1Ybg8BwOd7ZSH5-tlWLXfkWdnJ0AlGyd3O71moH4G2jY';
+  // ← קישור הטופס לבחירת הבית
+  const FORM_URL = 'https://forms.gle/HyNJaTm6LBVRQGBc8';
 </script>
 <style>
 :root{
@@ -117,6 +119,28 @@ main{flex:1;padding:0 16px 100px}
 .hero .stat{background:rgba(255,255,255,.06);border-radius:11px;padding:9px 13px;flex:1;text-align:center}
 .hero .stat .val{font-family:'Secular One';font-size:22px;color:var(--gold)}
 .hero .stat .lbl2{font-size:10px;color:var(--dim);font-weight:700;margin-top:1px}
+
+/* ── PICK CTA ── */
+.pick-cta{
+  display:flex;align-items:center;gap:13px;margin-bottom:14px;padding:15px 17px;
+  border-radius:var(--r);text-decoration:none;color:#05230f;
+  background:linear-gradient(135deg,var(--green),var(--green2));
+  box-shadow:0 14px 30px -12px rgba(25,224,122,.8);
+  position:relative;overflow:hidden;
+  animation:ctaPulse 2.6s ease-in-out infinite;
+}
+.pick-cta::after{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(300px 120px at 100% 0%,rgba(255,255,255,.3),transparent 60%);
+  pointer-events:none;
+}
+.pick-cta:active{transform:scale(.985)}
+.pick-emoji{font-size:30px;flex:0 0 auto;filter:drop-shadow(0 2px 4px rgba(0,0,0,.25))}
+.pick-text{flex:1;line-height:1.3}
+.pick-text b{font-family:'Secular One';font-size:17px;display:block}
+.pick-text small{font-size:11.5px;opacity:.8;font-weight:700}
+.pick-arrow{font-family:'Secular One';font-size:24px;flex:0 0 auto;font-weight:900}
+@keyframes ctaPulse{0%,100%{box-shadow:0 14px 30px -12px rgba(25,224,122,.8)}50%{box-shadow:0 14px 38px -10px rgba(25,224,122,1)}}
 
 /* ── LEADERBOARD ── */
 .lb{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
@@ -223,6 +247,14 @@ nav{
   <main>
     <!-- LEADERBOARD -->
     <section class="screen active" id="scr-lb">
+      <a class="pick-cta" href="https://forms.gle/HyNJaTm6LBVRQGBc8" target="_blank" rel="noopener" id="pick-cta">
+        <span class="pick-emoji">🎯</span>
+        <span class="pick-text">
+          <b>בחרו את הבית שלכם</b>
+          <small>8 נבחרות, אחת מכל קטגוריה — לחצו כאן</small>
+        </span>
+        <span class="pick-arrow">←</span>
+      </a>
       <div class="hero">
         <div class="lbl">LIVE STANDINGS · מונדיאל 2026</div>
         <div class="big">טבלת הדירוג</div>
@@ -497,6 +529,8 @@ function switchTab(name) {
    אתחול
    ================================================================ */
 renderTeams();
+// חיבור כפתור הבחירה לקישור הטופס (מוגדר למעלה ב-FORM_URL)
+document.getElementById('pick-cta').href = FORM_URL;
 loadAll();
 // רענון אוטומטי כל 60 שניות
 setInterval(loadAll, 60000);
