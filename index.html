@@ -23,6 +23,19 @@
   const SHEET_ID = '1Ybg8BwOd7ZSH5-tlWLXfkWdnJ0AlGyd3O71moH4G2jY';
   // ← קישור הטופס לבחירת הבית
   const FORM_URL = 'https://forms.gle/HyNJaTm6LBVRQGBc8';
+  // נקודת השליחה של הטופס + מזהי השדות (חולצו מקישור "מילוי מראש")
+  const FORM_RESPONSE_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdMZiguWvFkykqzfT-RtcP74_I5aSnva75gdhDyUjmWAVstUw/formResponse';
+  const FORM_ENTRIES = {
+    name: 'entry.1413675325',
+    1: 'entry.802859186',   // קטגוריה 1
+    2: 'entry.662804103',   // קטגוריה 2
+    3: 'entry.1906900381',  // קטגוריה 3
+    4: 'entry.647944461',   // קטגוריה 4
+    5: 'entry.406696468',   // קטגוריה 5
+    6: 'entry.1039021469',  // קטגוריה 6
+    7: 'entry.799868792',   // קטגוריה 7
+    8: 'entry.368210548',   // קטגוריה 8
+  };
 </script>
 <style>
 :root{
@@ -142,6 +155,56 @@ main{flex:1;padding:0 16px 100px}
 .pick-arrow{font-family:'Secular One';font-size:24px;flex:0 0 auto;font-weight:900}
 @keyframes ctaPulse{0%,100%{box-shadow:0 14px 30px -12px rgba(25,224,122,.8)}50%{box-shadow:0 14px 38px -10px rgba(25,224,122,1)}}
 
+/* ── DRAFT (בחירת בית) ── */
+.draft-intro{display:flex;gap:12px;align-items:center;padding:14px;margin-bottom:12px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+.draft-intro .ic{font-size:28px}
+.draft-intro p{font-size:12.5px;color:var(--dim);line-height:1.55}
+.draft-intro p b{color:var(--ink)}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:13px;color:var(--dim);margin:0 2px 7px;font-weight:700}
+.field input{width:100%;background:var(--panel);border:1px solid var(--line2);color:var(--ink);padding:13px 14px;border-radius:12px;font-size:16px;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s}
+.field input:focus{border-color:var(--green);box-shadow:0 0 0 4px rgba(25,224,122,.14)}
+.progress{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line2);border-radius:13px;padding:11px 14px;position:sticky;top:62px;z-index:15;margin-bottom:12px}
+.progress b{font-family:'Secular One';font-size:13.5px;white-space:nowrap}
+.progress .bar{flex:1;height:8px;background:var(--bg);border-radius:999px;overflow:hidden}
+.progress .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--gold));border-radius:999px;transition:width .35s cubic-bezier(.2,.8,.2,1)}
+.cat-block{margin-bottom:12px;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:linear-gradient(180deg,var(--panel),var(--bg2))}
+.cat-head{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer}
+.cat-head .ct{flex:1}
+.cat-head .ct b{font-size:14px;display:block}
+.cat-head .ct small{font-size:11px;color:var(--faint)}
+.cat-head .picked{font-size:13px;font-weight:800;display:flex;align-items:center;gap:6px}
+.cat-head .picked .fl{font-size:19px}
+.cat-head .picked .empty{color:var(--faint);font-weight:700;font-size:12px}
+.cat-head .chev{font-size:17px;color:var(--faint);transition:transform .2s}
+.cat-block.open .cat-head .chev{transform:rotate(180deg)}
+.cat-teams{display:none;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px 12px}
+.cat-block.open .cat-teams{display:grid}
+.tcard{display:flex;align-items:center;gap:9px;padding:11px 10px;border-radius:12px;border:1px solid var(--line);background:var(--panel);transition:all .14s;text-align:right;cursor:pointer}
+.tcard:active{transform:scale(.97)}
+.tcard.sel{border-color:var(--green);background:linear-gradient(180deg,rgba(25,224,122,.16),rgba(25,224,122,.04));box-shadow:0 0 0 3px rgba(25,224,122,.12)}
+.tcard .fl{font-size:23px}
+.tcard .nm{flex:1;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tcard .tick{width:19px;height:19px;border-radius:50%;border:2px solid var(--line2);flex:0 0 auto;display:grid;place-items:center;font-size:11px;color:transparent}
+.tcard.sel .tick{background:var(--green);border-color:var(--green);color:#05230f}
+.submit-zone{margin:16px 0 6px}
+.taken-note{font-size:11.5px;color:var(--faint);text-align:center;margin-bottom:10px}
+.taken-note b{color:var(--dim)}
+.btn-submit{width:100%;background:linear-gradient(180deg,var(--green),var(--green2));color:#05230f;font-weight:900;font-size:16px;padding:15px;border-radius:14px;border:none;font-family:inherit;cursor:pointer;box-shadow:0 12px 26px -12px rgba(25,224,122,.8);transition:transform .15s,filter .15s}
+.btn-submit:active{transform:scale(.985)}
+.btn-submit:disabled{filter:grayscale(.7) brightness(.7);box-shadow:none;cursor:not-allowed}
+
+/* ── MODAL ── */
+.modal{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(4,7,14,.8);backdrop-filter:blur(4px)}
+.modal.show{display:flex;animation:fade .25s ease both}
+.modal-card{width:100%;max-width:380px;background:linear-gradient(180deg,#13233d,#0c1322);border:1px solid var(--line2);border-radius:22px;padding:26px 22px;text-align:center;box-shadow:var(--shadow)}
+.modal-card .em{font-size:46px}
+.modal-card h3{font-family:'Secular One';font-size:20px;margin:10px 0 6px}
+.modal-card p{color:var(--dim);font-size:13.5px;line-height:1.6;margin:0 0 18px}
+.modal-card p.warn{color:var(--red)}
+.combo-strip{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.combo-strip span{font-size:23px}
+
 /* ── LEADERBOARD ── */
 .lb{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
 .lb-row{border-bottom:1px solid var(--line);cursor:pointer;transition:background .12s}
@@ -241,20 +304,21 @@ nav{
 
   <div class="tabs">
     <button class="tab active" id="tab-lb" onclick="switchTab('lb')">🏆 דירוג</button>
+    <button class="tab" id="tab-draft" onclick="switchTab('draft')">🎯 בחירה</button>
     <button class="tab" id="tab-teams" onclick="switchTab('teams')">🌍 נבחרות</button>
   </div>
 
   <main>
     <!-- LEADERBOARD -->
     <section class="screen active" id="scr-lb">
-      <a class="pick-cta" href="https://forms.gle/HyNJaTm6LBVRQGBc8" target="_blank" rel="noopener" id="pick-cta">
+      <button class="pick-cta" onclick="switchTab('draft')" id="pick-cta" style="width:100%;border:none;font-family:inherit;cursor:pointer;text-align:right">
         <span class="pick-emoji">🎯</span>
         <span class="pick-text">
           <b>בחרו את הבית שלכם</b>
           <small>8 נבחרות, אחת מכל קטגוריה — לחצו כאן</small>
         </span>
         <span class="pick-arrow">←</span>
-      </a>
+      </button>
       <div class="hero">
         <div class="lbl">LIVE STANDINGS · מונדיאל 2026</div>
         <div class="big">טבלת הדירוג</div>
@@ -267,6 +331,28 @@ nav{
       </div>
       <div id="lb-wrap"></div>
       <div class="updated" id="updated-label"></div>
+    </section>
+
+    <!-- DRAFT -->
+    <section class="screen" id="scr-draft">
+      <div class="draft-intro">
+        <div class="ic">🎯</div>
+        <p>בחרו <b>נבחרת אחת מכל קטגוריה</b> (8 בסך הכל). הניקוד שלכם = סך הנקודות שכל 8 הנבחרות יצברו בטורניר. כל צירוף חייב להיות ייחודי — אם הבית כבר נתפס, נבקש שתשנו.</p>
+      </div>
+      <div class="field">
+        <label>השם המלא שלכם</label>
+        <input id="draft-name" type="text" placeholder="לדוגמה: יוסי כהן" oninput="updateProgress()">
+      </div>
+      <div class="progress">
+        <b><span id="prog-count">0</span>/8</b>
+        <div class="bar"><i id="prog-bar"></i></div>
+        <b style="color:var(--gold)">⌀ <span id="prog-pts">0</span> נק׳</b>
+      </div>
+      <div id="cat-list"></div>
+      <div class="submit-zone">
+        <div class="taken-note">צירופים שכבר נתפסו: <b id="taken-count">…</b></div>
+        <button class="btn-submit" id="submitHouse" disabled onclick="submitHouse()">הגשת הבית 🔒</button>
+      </div>
     </section>
 
     <!-- TEAMS -->
@@ -286,11 +372,20 @@ nav{
       <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 9h8V3h-8z" fill="currentColor" stroke="none"/></svg>
       דירוג
     </button>
+    <button class="nb" id="nb-draft" onclick="switchTab('draft')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+      בחירה
+    </button>
     <button class="nb" id="nb-teams" onclick="switchTab('teams')">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"/></svg>
       נבחרות
     </button>
   </nav>
+</div>
+
+<!-- חלון הודעה -->
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-card" id="modal-body"></div>
 </div>
 
 <script>
@@ -430,6 +525,10 @@ function renderLeaderboard(entries) {
       ? `${entries.length} בתים רשומים · הניקוד מתעדכן עם כל תוצאה`
       : 'טרם הוגשו בתים · הצטרפו עכשיו!';
 
+  // עדכון מונה הצירופים התפוסים במסך הבחירה
+  const takenEl = document.getElementById('taken-count');
+  if (takenEl) takenEl.textContent = entries.length;
+
   if (!entries.length) {
     wrap.innerHTML = `<div class="state-card"><div class="em">📋</div><p>עדיין לא הוגשו בתים.<br><b>שלחו את הקישור לקבוצה!</b></p></div>`;
     return;
@@ -518,19 +617,131 @@ function renderTeams() {
    ניווט בין לשוניות
    ================================================================ */
 function switchTab(name) {
-  ['lb','teams'].forEach(t => {
+  ['lb','draft','teams'].forEach(t => {
     document.getElementById('tab-'+t).classList.toggle('active', t===name);
     document.getElementById('nb-'+t).classList.toggle('active', t===name);
     document.getElementById('scr-'+t).classList.toggle('active', t===name);
   });
+  window.scrollTo({top:0, behavior:'smooth'});
 }
+
+/* ================================================================
+   מסך בחירת הבית (דראפט) + חסימת כפילויות
+   ================================================================ */
+let pick = {};  // קטגוריה → שם נבחרת
+
+function renderDraft() {
+  const wrap = document.getElementById('cat-list');
+  let html = '';
+  for (let c = 1; c <= 8; c++) {
+    const cats = Object.entries(TEAMS).filter(([,v]) => v.cat === c);
+    html += `<div class="cat-block" data-cat="${c}">
+      <div class="cat-head" onclick="toggleCat(${c})">
+        <div class="cat-badge">${c}</div>
+        <div class="ct"><b>קטגוריה ${c}</b><small>${CAT_LABEL[c]}</small></div>
+        <div class="picked" id="picked-${c}"><span class="empty">— לא נבחר —</span></div>
+        <div class="chev">⌄</div>
+      </div>
+      <div class="cat-teams">
+        ${cats.map(([name, info]) => `
+          <div class="tcard" data-cat="${c}" data-team="${name}" onclick="selectTeam(${c},'${name}',event)">
+            <span class="fl">${info.fl}</span>
+            <span class="nm">${name}</span>
+            <span class="tick">✓</span>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }
+  wrap.innerHTML = html;
+}
+function toggleCat(c) {
+  document.querySelector(`.cat-block[data-cat="${c}"]`).classList.toggle('open');
+}
+function selectTeam(c, name, ev) {
+  if (ev) ev.stopPropagation();
+  pick[c] = name;
+  const block = document.querySelector(`.cat-block[data-cat="${c}"]`);
+  block.querySelectorAll('.tcard').forEach(b => b.classList.toggle('sel', b.dataset.team === name));
+  document.getElementById('picked-'+c).innerHTML = `<span class="fl">${TEAMS[name].fl}</span>${name}`;
+  block.classList.remove('open');
+  updateProgress();
+}
+function updateProgress() {
+  const n = Object.keys(pick).length;
+  document.getElementById('prog-count').textContent = n;
+  document.getElementById('prog-bar').style.width = (n/8*100) + '%';
+  document.getElementById('prog-pts').textContent =
+    Object.values(pick).reduce((s,name) => s + (TEAM_POINTS[name]||0), 0);
+  const name = document.getElementById('draft-name').value.trim();
+  document.getElementById('submitHouse').disabled = !(n === 8 && name);
+}
+
+// קריאת הצירופים שכבר נתפסו, היישר מהגיליון (עמודה C בלשונית "דירוג")
+async function getExistingCombos() {
+  const table = await fetchSheet('דירוג');
+  const set = new Set();
+  tableToRows(table).forEach(r => {
+    const key = String(r[2] || '').trim();
+    if (key) set.add(key);
+  });
+  return set;
+}
+
+async function submitHouse() {
+  const btn = document.getElementById('submitHouse');
+  const name = document.getElementById('draft-name').value.trim();
+  if (!name || Object.keys(pick).length !== 8) return;
+
+  const key = [1,2,3,4,5,6,7,8].map(c => pick[c]).join('-');
+  const strip = [1,2,3,4,5,6,7,8].map(c => `<span>${TEAMS[pick[c]].fl}</span>`).join('');
+
+  btn.disabled = true;
+  btn.textContent = 'בודק זמינות…';
+  try {
+    const combos = await getExistingCombos();
+    if (combos.has(key)) {
+      openModal(`<div class="em">🚫</div><h3>הבית הזה כבר נתפס</h3>
+        <div class="combo-strip">${strip}</div>
+        <p class="warn">מישהו כבר הגיש את אותו צירוף בדיוק. שנו לפחות נבחרת אחת ונסו שוב.</p>
+        <button class="btn-submit" onclick="closeModal()">חזרה לבחירה</button>`);
+      btn.textContent = 'הגשת הבית 🔒'; btn.disabled = false;
+      return;
+    }
+    // שליחה לטופס הגוגל (הגיליון מתעדכן ממנו אוטומטית)
+    const body = new URLSearchParams();
+    body.append(FORM_ENTRIES.name, name);
+    for (let c = 1; c <= 8; c++) body.append(FORM_ENTRIES[c], pick[c]);
+    await fetch(FORM_RESPONSE_URL, { method:'POST', mode:'no-cors', body });
+
+    openModal(`<div class="em">✅</div><h3>הבית הוגש!</h3>
+      <div class="combo-strip">${strip}</div>
+      <p>הבית של <b>${name}</b> נשלח בהצלחה. הוא יופיע בטבלת הדירוג תוך דקה-שתיים.<br><br>
+      <span style="color:var(--faint);font-size:12px">תזכורת: דמי ההשתתפות נאספים ע״י המארגן מחוץ לאפליקציה.</span></p>
+      <button class="btn-submit" onclick="afterSubmit()">מצוין 🎉</button>`);
+    pick = {};
+  } catch (e) {
+    openModal(`<div class="em">⚠️</div><h3>השליחה נכשלה</h3>
+      <p class="warn">לא הצלחנו לשלוח את הבית. בדקו את החיבור לאינטרנט ונסו שוב.<br><small>${e.message}</small></p>
+      <button class="btn-submit" onclick="closeModal()">סגירה</button>`);
+    btn.textContent = 'הגשת הבית 🔒'; btn.disabled = false;
+  }
+}
+function afterSubmit() {
+  closeModal();
+  document.getElementById('draft-name').value = '';
+  renderDraft();
+  updateProgress();
+  switchTab('lb');
+  loadAll();
+}
+function openModal(html){ document.getElementById('modal-body').innerHTML = html; document.getElementById('modal').classList.add('show'); }
+function closeModal(){ document.getElementById('modal').classList.remove('show'); }
 
 /* ================================================================
    אתחול
    ================================================================ */
 renderTeams();
-// חיבור כפתור הבחירה לקישור הטופס (מוגדר למעלה ב-FORM_URL)
-document.getElementById('pick-cta').href = FORM_URL;
+renderDraft();
 loadAll();
 // רענון אוטומטי כל 60 שניות
 setInterval(loadAll, 60000);
