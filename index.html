@@ -350,13 +350,28 @@ function tableToRows(table) {
    ================================================================ */
 let lastLoaded = null;
 let autoTimer = null;
+let TEAM_POINTS = {};  // שם נבחרת → נקודות שצברה (מלשונית "תוצאות")
 
 async function loadAll() {
   const btn = document.getElementById('refBtn');
   btn.classList.add('spinning');
   try {
-    const table = await fetchSheet('דירוג');
-    const rows = tableToRows(table);
+    // קוראים את שתי הלשוניות במקביל: "תוצאות" לנקודות כל נבחרת, "דירוג" לבתים
+    const [resultsTable, rankTable] = await Promise.all([
+      fetchSheet('תוצאות').catch(() => null),  // אם נכשל — לא קריטי, נציג בלי פירוט נקודות
+      fetchSheet('דירוג')
+    ]);
+
+    // בניית מפת נקודות לכל נבחרת: עמודה A = שם, עמודה E = נקודות (אינדקס 4)
+    TEAM_POINTS = {};
+    if (resultsTable) {
+      tableToRows(resultsTable).forEach(r => {
+        const teamName = String(r[0] || '').trim();
+        if (teamName) TEAM_POINTS[teamName] = Number(r[4]) || 0;
+      });
+    }
+
+    const rows = tableToRows(rankTable);
     // filter rows where name (col B = index 1) is not empty
     const entries = rows.filter(r => r[1] && String(r[1]).trim() !== '');
     renderLeaderboard(entries);
@@ -400,11 +415,13 @@ function renderLeaderboard(entries) {
     const teams = houseKey ? houseKey.split('-') : [];
 
     const bdGrid = teams.map(t => {
-      const info = TEAMS[t.trim()] || {};
+      const tn = t.trim();
+      const info = TEAMS[tn] || {};
+      const teamPts = TEAM_POINTS[tn] || 0;
       return `<div class="bd-item">
         <span class="fl">${info.fl||'🏳'}</span>
-        <span class="tn"><b>${t.trim()}</b><small>קטגוריה ${info.cat||'?'}</small></span>
-        <span class="pt">${0}</span>
+        <span class="tn"><b>${tn}</b><small>קטגוריה ${info.cat||'?'}</small></span>
+        <span class="pt">${teamPts}</span>
       </div>`;
     }).join('');
 
