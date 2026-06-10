@@ -106,6 +106,19 @@ main{flex:1;padding:0 16px 100px}
 .hero .stat .val{font-family:'Secular One';font-size:22px;color:var(--gold)}
 .hero .stat .lbl2{font-size:10px;color:var(--dim);font-weight:700;margin-top:1px}
 
+/* פרסים */
+.prizes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px}
+.prize{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:16px;padding:14px 8px;text-align:center;position:relative;overflow:hidden}
+.prize.p1{border-color:rgba(255,210,63,.4)}
+.prize.p1::before{content:"";position:absolute;inset:0;background:radial-gradient(200px 120px at 50% 0,rgba(255,210,63,.16),transparent 60%)}
+.prize .medal{font-size:24px}
+.prize .pl{font-size:11px;color:var(--faint);font-weight:700;margin:4px 0 2px;position:relative}
+.prize .amt{font-family:'Secular One';font-size:19px;position:relative}
+.prize.p1 .amt{color:var(--gold)}
+.prize .amt small{font-size:11px;font-family:'Heebo';color:var(--dim)}
+.consolation{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding:11px 14px;background:var(--panel);border:1px dashed var(--line2);border-radius:14px;font-size:12.5px;color:var(--dim)}
+.consolation b{font-family:'Secular One';color:var(--gold)}
+
 .lb{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
 .lb-row{border-bottom:1px solid var(--line);cursor:pointer;transition:background .12s}
 .lb-row:last-child{border-bottom:none}
@@ -227,6 +240,8 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-w
           <div class="stat"><div class="val" id="stat-pot">—</div><div class="lbl2">קופה ₪</div></div>
         </div>
       </div>
+      <div class="h-sec" id="prizes-head" style="display:none"><h2>💰 הפרסים</h2><small>מתעדכן לפי מספר הבתים</small></div>
+      <div id="prizes-wrap"></div>
       <div id="lb-wrap"></div>
       <div class="updated" id="updated-label"></div>
     </section>
@@ -375,6 +390,30 @@ function renderLeaderboard(entries){
   document.getElementById('hero-meta').textContent = entries.length
     ? `${entries.length} בתים רשומים · הניקוד מתעדכן עם כל תוצאה`
     : 'טרם הוגשו בתים · הצטרפו עכשיו!';
+
+  // פרסים: מורידים 200₪ לתנחומים, מחלקים את היתרה ½/⅓/⅙.
+  // מקום 1 ו-2 מעוגלים למאה הקרובה; מקום 3 מקבל את השארית כך שהסכום מדויק לקופה.
+  const ph = document.getElementById('prizes-head');
+  const pw = document.getElementById('prizes-wrap');
+  const CONSOLATION = 200;
+  const pot = entries.length * ENTRY_FEE;
+  if(pot > CONSOLATION){
+    const pool = pot - CONSOLATION;
+    const round100 = x => Math.round(x/100)*100;
+    const p1 = round100(pool/2);
+    const p2 = round100(pool/3);
+    const p3 = pool - p1 - p2;            // השארית — שומר על סכום מדויק
+    ph.style.display = 'flex';
+    pw.innerHTML = `<div class="prizes">
+      <div class="prize p1"><div class="medal">🥇</div><div class="pl">מקום 1</div><div class="amt">${p1.toLocaleString()}<small>₪</small></div></div>
+      <div class="prize"><div class="medal">🥈</div><div class="pl">מקום 2</div><div class="amt">${p2.toLocaleString()}<small>₪</small></div></div>
+      <div class="prize"><div class="medal">🥉</div><div class="pl">מקום 3</div><div class="amt">${p3.toLocaleString()}<small>₪</small></div></div>
+    </div>
+    <div class="consolation"><span>🎟️ פרס תנחומים (מקום אחרון)</span><b>${CONSOLATION}₪</b></div>`;
+  } else {
+    ph.style.display = 'none';
+    pw.innerHTML = '';
+  }
 
   if(!entries.length){
     wrap.innerHTML = `<div class="state-card"><div class="em">📋</div><p>עדיין לא הוגשו בתים.<br><b>שלחו את הקישור לקבוצה!</b></p></div>`;
