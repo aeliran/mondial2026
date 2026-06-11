@@ -60,9 +60,10 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-
 .refresh-btn.spinning svg{animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-.tabs{display:flex;padding:0 16px;gap:6px;margin-bottom:4px}
-.tab{flex:1;padding:10px 6px;font-size:13px;border-radius:12px;border:1px solid var(--line);color:var(--faint);
-  background:transparent;cursor:pointer;font-family:inherit;font-weight:800;transition:all .15s}
+.tabs{display:flex;padding:0 16px;gap:6px;margin-bottom:4px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;padding:10px 12px;font-size:13px;border-radius:12px;border:1px solid var(--line);color:var(--faint);
+  background:transparent;cursor:pointer;font-family:inherit;font-weight:800;transition:all .15s;white-space:nowrap}
 .tab.active{color:var(--green);background:rgba(25,224,122,.1);border-color:rgba(25,224,122,.25)}
 
 main{flex:1;padding:0 16px 100px}
@@ -154,15 +155,6 @@ main{flex:1;padding:0 16px 100px}
 .intro p{font-size:12.5px;color:var(--dim);line-height:1.55}
 .intro p b{color:var(--ink)}
 
-/* taken houses */
-.taken-card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px}
-.taken-card .nm{font-size:13.5px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:7px}
-.taken-card .nm .badge{font-size:10px;font-weight:800;color:var(--faint);background:var(--bg);border:1px solid var(--line);padding:2px 7px;border-radius:999px}
-.taken-teams{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.taken-chip{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--dim);background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:5px 8px}
-.taken-chip .fl{font-size:15px}
-.taken-chip b{color:var(--ink);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
 .h-sec{display:flex;align-items:center;justify-content:space-between;margin:18px 4px 10px}
 .h-sec h2{font-family:'Secular One';font-size:17px}
 .h-sec small{font-size:11px;color:var(--faint)}
@@ -186,6 +178,30 @@ main{flex:1;padding:0 16px 100px}
 .rtxt b{color:var(--green);font-weight:800}
 .rtxt small{color:var(--faint);font-size:11.5px}
 .rules-foot{text-align:center;font-family:'Secular One';font-size:16px;color:var(--gold);margin:16px 0 4px}
+
+/* לוח משחקים + משחקי היום */
+.today-block{background:linear-gradient(135deg,#10243f,#0a1628);border:1px solid var(--line2);border-radius:var(--r);padding:14px 15px;margin-bottom:14px;position:relative;overflow:hidden}
+.today-block::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(360px 180px at 100% 0%,rgba(25,224,122,.18),transparent 60%)}
+.today-block .th{display:flex;align-items:center;gap:8px;margin-bottom:10px;position:relative}
+.today-block .th b{font-family:'Secular One';font-size:15px}
+.today-block .th .live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(25,224,122,.2)}
+.today-block .none{font-size:12.5px;color:var(--dim);position:relative}
+.day-head{font-family:'Secular One';font-size:14px;color:var(--gold);margin:16px 4px 8px;display:flex;align-items:center;gap:8px}
+.day-head::before{content:"";flex:1;height:1px;background:var(--line);order:2}
+.day-head span{order:1}
+.match{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:7px}
+.match .mtime{flex:0 0 auto;width:52px;text-align:center}
+.match .mtime b{font-family:'Secular One';font-size:14px;display:block}
+.match .mtime small{font-size:9px;color:var(--faint);font-weight:700}
+.match .mteams{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}
+.match .mt{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.match .mt .fl{font-size:17px}
+.match .grp{flex:0 0 auto;font-size:10px;font-weight:800;color:var(--faint);background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:3px 7px}
+.match.in-today{border-color:rgba(25,224,122,.35);background:linear-gradient(180deg,rgba(25,224,122,.07),var(--panel))}
+.ko-note{margin-top:16px;background:var(--panel);border:1px dashed var(--line2);border-radius:14px;padding:13px 15px;font-size:12px;color:var(--dim);line-height:1.7;text-align:center}
+.ko-note b{color:var(--gold);font-family:'Secular One';font-weight:400}
+.ko-note small{color:var(--faint);font-size:11px}
+
 
 nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;z-index:30;
   display:flex;padding:8px 12px calc(8px + env(safe-area-inset-bottom));gap:6px;
@@ -212,7 +228,7 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-w
 
   <div class="tabs">
     <button class="tab active" id="tab-lb" onclick="switchTab('lb')">🏆 דירוג</button>
-    <button class="tab" id="tab-taken" onclick="switchTab('taken')">📋 תפוסים</button>
+    <button class="tab" id="tab-sched" onclick="switchTab('sched')">📅 לוח</button>
     <button class="tab" id="tab-teams" onclick="switchTab('teams')">🌍 נבחרות</button>
     <button class="tab" id="tab-rules" onclick="switchTab('rules')">📜 תקנון</button>
   </div>
@@ -220,16 +236,7 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-w
   <main>
     <!-- LEADERBOARD -->
     <section class="screen active" id="scr-lb">
-      <a class="pick-cta" href="#" id="cta-lb" target="_blank" rel="noopener">
-        <span class="pick-emoji">🎯</span>
-        <span class="pick-text"><b>בחרו את הבית שלכם</b><small>8 נבחרות, אחת מכל קטגוריה — לחצו כאן</small></span>
-        <span class="pick-arrow">←</span>
-      </a>
-      <a class="pay-cta" href="#" id="pay-lb" target="_blank" rel="noopener">
-        <span class="pay-emoji">💰</span>
-        <span class="pay-text"><b>תשלום דמי השתתפות · 200₪</b><small>בתשלום ב-PayBox · בית אחד = תשלום אחד</small></span>
-        <span class="pay-arrow">←</span>
-      </a>
+      <div id="today-wrap"></div>
       <div class="hero">
         <div class="lbl">LIVE STANDINGS · מונדיאל 2026</div>
         <div class="big">טבלת הדירוג</div>
@@ -244,21 +251,6 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-w
       <div id="prizes-wrap"></div>
       <div id="lb-wrap"></div>
       <div class="updated" id="updated-label"></div>
-    </section>
-
-    <!-- TAKEN HOUSES -->
-    <section class="screen" id="scr-taken">
-      <a class="pick-cta" href="#" id="cta-taken" target="_blank" rel="noopener">
-        <span class="pick-emoji">🎯</span>
-        <span class="pick-text"><b>בחרו את הבית שלכם</b><small>בדקו מה כבר נתפס ← ואז מלאו את הטופס</small></span>
-        <span class="pick-arrow">←</span>
-      </a>
-      <div class="intro">
-        <div class="ic">📋</div>
-        <p>כל הבתים שכבר הוגשו מופיעים כאן. <b>אסור ששני בתים יהיו זהים</b> — אם הצירוף שתכננתם כבר תפוס, שנו לפחות נבחרת אחת. אפשר לבחור את אותה נבחרת בודדת כמו אחרים; מה שצריך להיות ייחודי זה הצירוף המלא של כל 8.</p>
-      </div>
-      <div class="h-sec"><h2>בתים שנתפסו</h2><small id="taken-count">—</small></div>
-      <div id="taken-wrap"></div>
     </section>
 
     <!-- TEAMS -->
@@ -292,14 +284,34 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-w
       </div>
       <div class="rules-foot">בהצלחה לכולם! 🏆</div>
     </section>
+
+    <!-- SCHEDULE -->
+    <section class="screen" id="scr-sched">
+      <div class="hero" style="margin-bottom:12px">
+        <div class="lbl">FIXTURES · שעון ישראל</div>
+        <div class="big">לוח המשחקים</div>
+        <div class="meta">כל 72 משחקי שלב הבתים · שעות לפי שעון ישראל</div>
+      </div>
+      <a class="pick-cta" href="https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/scores-fixtures" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#3d7dff,#2a5bb0);box-shadow:0 14px 30px -12px rgba(61,125,255,.7);color:#fff;animation:none">
+        <span class="pick-emoji">📺</span>
+        <span class="pick-text"><b>תוצאות חיות + שלבי הנוקאאוט</b><small>הלוח הרשמי המלא ב-FIFA.com</small></span>
+        <span class="pick-arrow">←</span>
+      </a>
+      <div id="sched-wrap"></div>
+      <div class="ko-note">
+        <b>שלבי הנוקאאוט</b><br>
+        שמינית גמר (32): 28.6–3.7 · שמינית: 4–7.7 · רבע גמר: 9–11.7 · חצי גמר: 14–15.7 · גמר: 19.7<br>
+        <small>המשחקים והשעות יופיעו עם היוודע המעפילות. המשחק על המקום ה-3 (18.7) אינו נספר בפול.</small>
+      </div>
+    </section>
   </main>
 
   <nav>
     <button class="nb active" id="nb-lb" onclick="switchTab('lb')">
       <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 9h8V3h-8z" fill="currentColor" stroke="none"/></svg>דירוג
     </button>
-    <button class="nb" id="nb-taken" onclick="switchTab('taken')">
-      <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>תפוסים
+    <button class="nb" id="nb-sched" onclick="switchTab('sched')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>לוח
     </button>
     <button class="nb" id="nb-teams" onclick="switchTab('teams')">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"/></svg>נבחרות
@@ -370,7 +382,6 @@ async function loadAll(){
     }
     const entries = tableToRows(rankTable).filter(r => r[1] && String(r[1]).trim() !== '');
     renderLeaderboard(entries);
-    renderTaken(entries);
     const now = new Date();
     document.getElementById('updated-label').textContent =
       `עודכן לאחרונה: ${now.toLocaleTimeString('he-IL')} · מתרענן אוטומטית כל דקה`;
@@ -443,24 +454,6 @@ function renderLeaderboard(entries){
   }).join('') + `</div>`;
 }
 
-function renderTaken(entries){
-  document.getElementById('taken-count').textContent = `${entries.length} בתים`;
-  const wrap = document.getElementById('taken-wrap');
-  if(!entries.length){
-    wrap.innerHTML = `<div class="state-card"><div class="em">🟢</div><p>אף בית עוד לא נתפס.<br><b>אתם יכולים להיות הראשונים!</b></p></div>`;
-    return;
-  }
-  wrap.innerHTML = entries.map(r=>{
-    const name=String(r[1]||'').trim(), key=String(r[2]||'').trim();
-    const teams = key ? key.split('-') : [];
-    const chips = teams.map(t=>{
-      const tn=t.trim();
-      return `<span class="taken-chip"><span class="fl">${getFlag(tn)}</span><b>${tn}</b></span>`;
-    }).join('');
-    return `<div class="taken-card"><div class="nm">${name}</div><div class="taken-teams">${chips}</div></div>`;
-  }).join('');
-}
-
 function renderError(msg){
   document.getElementById('lb-wrap').innerHTML =
     `<div class="state-card"><div class="em">⚠️</div><p>לא ניתן היה לטעון את הנתונים.<br>
@@ -483,7 +476,7 @@ function renderTeams(){
 }
 
 function switchTab(name){
-  ['lb','taken','teams','rules'].forEach(t=>{
+  ['lb','sched','teams','rules'].forEach(t=>{
     document.getElementById('tab-'+t).classList.toggle('active', t===name);
     document.getElementById('nb-'+t).classList.toggle('active', t===name);
     document.getElementById('scr-'+t).classList.toggle('active', t===name);
@@ -491,13 +484,143 @@ function switchTab(name){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
+/* ===== לוח משחקי שלב הבתים (שעון ישראל) ===== */
+// d = תאריך בישראל (YYYY-MM-DD), t = שעת התחלה, h/a = בית/חוץ, g = בית הבית
+const FIXTURES = [
+  {d:'2026-06-11',t:'22:00',h:'מקסיקו',a:'דרום אפריקה',g:'A'},
+  {d:'2026-06-12',t:'05:00',h:'דרום קוריאה',a:'צ׳כיה',g:'A'},
+  {d:'2026-06-12',t:'22:00',h:'קנדה',a:'בוסניה',g:'B'},
+  {d:'2026-06-13',t:'04:00',h:'ארה״ב',a:'פרגוואי',g:'D'},
+  {d:'2026-06-13',t:'22:00',h:'קטאר',a:'שווייץ',g:'B'},
+  {d:'2026-06-14',t:'01:00',h:'ברזיל',a:'מרוקו',g:'C'},
+  {d:'2026-06-14',t:'04:00',h:'האיטי',a:'סקוטלנד',g:'C'},
+  {d:'2026-06-14',t:'07:00',h:'אוסטרליה',a:'טורקיה',g:'D'},
+  {d:'2026-06-14',t:'20:00',h:'גרמניה',a:'קוראסאו',g:'E'},
+  {d:'2026-06-14',t:'23:00',h:'הולנד',a:'יפן',g:'F'},
+  {d:'2026-06-15',t:'02:00',h:'חוף השנהב',a:'אקוודור',g:'E'},
+  {d:'2026-06-15',t:'05:00',h:'שוודיה',a:'טוניסיה',g:'F'},
+  {d:'2026-06-15',t:'19:00',h:'ספרד',a:'כף ורדה',g:'H'},
+  {d:'2026-06-15',t:'22:00',h:'בלגיה',a:'מצרים',g:'G'},
+  {d:'2026-06-16',t:'01:00',h:'ערב הסעודית',a:'אורוגוואי',g:'H'},
+  {d:'2026-06-16',t:'04:00',h:'איראן',a:'ניו זילנד',g:'G'},
+  {d:'2026-06-16',t:'22:00',h:'צרפת',a:'סנגל',g:'I'},
+  {d:'2026-06-17',t:'01:00',h:'עיראק',a:'נורווגיה',g:'I'},
+  {d:'2026-06-17',t:'04:00',h:'ארגנטינה',a:'אלג׳יריה',g:'J'},
+  {d:'2026-06-17',t:'07:00',h:'אוסטריה',a:'ירדן',g:'J'},
+  {d:'2026-06-17',t:'20:00',h:'פורטוגל',a:'קונגו',g:'K'},
+  {d:'2026-06-17',t:'23:00',h:'אנגליה',a:'קרואטיה',g:'L'},
+  {d:'2026-06-18',t:'02:00',h:'גאנה',a:'פנמה',g:'L'},
+  {d:'2026-06-18',t:'05:00',h:'אוזבקיסטן',a:'קולומביה',g:'K'},
+  {d:'2026-06-18',t:'19:00',h:'צ׳כיה',a:'דרום אפריקה',g:'A'},
+  {d:'2026-06-18',t:'22:00',h:'שווייץ',a:'בוסניה',g:'B'},
+  {d:'2026-06-19',t:'01:00',h:'קנדה',a:'קטאר',g:'B'},
+  {d:'2026-06-19',t:'04:00',h:'מקסיקו',a:'דרום קוריאה',g:'A'},
+  {d:'2026-06-19',t:'22:00',h:'ארה״ב',a:'אוסטרליה',g:'D'},
+  {d:'2026-06-20',t:'01:00',h:'סקוטלנד',a:'מרוקו',g:'C'},
+  {d:'2026-06-20',t:'03:30',h:'ברזיל',a:'האיטי',g:'C'},
+  {d:'2026-06-20',t:'06:00',h:'טורקיה',a:'פרגוואי',g:'D'},
+  {d:'2026-06-20',t:'20:00',h:'הולנד',a:'שוודיה',g:'F'},
+  {d:'2026-06-20',t:'23:00',h:'גרמניה',a:'חוף השנהב',g:'E'},
+  {d:'2026-06-21',t:'03:00',h:'אקוודור',a:'קוראסאו',g:'E'},
+  {d:'2026-06-21',t:'07:00',h:'טוניסיה',a:'יפן',g:'F'},
+  {d:'2026-06-21',t:'19:00',h:'ספרד',a:'ערב הסעודית',g:'H'},
+  {d:'2026-06-21',t:'22:00',h:'בלגיה',a:'איראן',g:'G'},
+  {d:'2026-06-22',t:'01:00',h:'אורוגוואי',a:'כף ורדה',g:'H'},
+  {d:'2026-06-22',t:'04:00',h:'ניו זילנד',a:'מצרים',g:'G'},
+  {d:'2026-06-22',t:'20:00',h:'ארגנטינה',a:'אוסטריה',g:'J'},
+  {d:'2026-06-23',t:'00:00',h:'צרפת',a:'עיראק',g:'I'},
+  {d:'2026-06-23',t:'03:00',h:'נורווגיה',a:'סנגל',g:'I'},
+  {d:'2026-06-23',t:'06:00',h:'ירדן',a:'אלג׳יריה',g:'J'},
+  {d:'2026-06-23',t:'20:00',h:'פורטוגל',a:'אוזבקיסטן',g:'K'},
+  {d:'2026-06-23',t:'23:00',h:'אנגליה',a:'גאנה',g:'L'},
+  {d:'2026-06-24',t:'02:00',h:'פנמה',a:'קרואטיה',g:'L'},
+  {d:'2026-06-24',t:'05:00',h:'קולומביה',a:'קונגו',g:'K'},
+  {d:'2026-06-24',t:'22:00',h:'שווייץ',a:'קנדה',g:'B'},
+  {d:'2026-06-24',t:'22:00',h:'בוסניה',a:'קטאר',g:'B'},
+  {d:'2026-06-25',t:'01:00',h:'סקוטלנד',a:'ברזיל',g:'C'},
+  {d:'2026-06-25',t:'01:00',h:'מרוקו',a:'האיטי',g:'C'},
+  {d:'2026-06-25',t:'04:00',h:'צ׳כיה',a:'מקסיקו',g:'A'},
+  {d:'2026-06-25',t:'04:00',h:'דרום אפריקה',a:'דרום קוריאה',g:'A'},
+  {d:'2026-06-25',t:'23:00',h:'אקוודור',a:'גרמניה',g:'E'},
+  {d:'2026-06-25',t:'23:00',h:'קוראסאו',a:'חוף השנהב',g:'E'},
+  {d:'2026-06-26',t:'02:00',h:'יפן',a:'שוודיה',g:'F'},
+  {d:'2026-06-26',t:'02:00',h:'טוניסיה',a:'הולנד',g:'F'},
+  {d:'2026-06-26',t:'05:00',h:'טורקיה',a:'ארה״ב',g:'D'},
+  {d:'2026-06-26',t:'05:00',h:'פרגוואי',a:'אוסטרליה',g:'D'},
+  {d:'2026-06-26',t:'22:00',h:'נורווגיה',a:'צרפת',g:'I'},
+  {d:'2026-06-26',t:'22:00',h:'סנגל',a:'עיראק',g:'I'},
+  {d:'2026-06-27',t:'03:00',h:'כף ורדה',a:'ערב הסעודית',g:'H'},
+  {d:'2026-06-27',t:'03:00',h:'אורוגוואי',a:'ספרד',g:'H'},
+  {d:'2026-06-27',t:'06:00',h:'מצרים',a:'איראן',g:'G'},
+  {d:'2026-06-27',t:'06:00',h:'ניו זילנד',a:'בלגיה',g:'G'},
+  {d:'2026-06-28',t:'00:00',h:'פנמה',a:'אנגליה',g:'L'},
+  {d:'2026-06-28',t:'00:00',h:'קרואטיה',a:'גאנה',g:'L'},
+  {d:'2026-06-28',t:'02:30',h:'קולומביה',a:'פורטוגל',g:'K'},
+  {d:'2026-06-28',t:'02:30',h:'קונגו',a:'אוזבקיסטן',g:'K'},
+  {d:'2026-06-28',t:'05:00',h:'אלג׳יריה',a:'אוסטריה',g:'J'},
+  {d:'2026-06-28',t:'05:00',h:'ירדן',a:'ארגנטינה',g:'J'},
+];
+const DOW = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+function fmtDay(iso){
+  const [y,m,dd] = iso.split('-').map(Number);
+  const dt = new Date(y, m-1, dd);
+  return `יום ${DOW[dt.getDay()]} · ${dd}.${m}`;
+}
+function todayISO(){
+  // תאריך נוכחי לפי שעון ישראל
+  const now = new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Jerusalem'}));
+  const p = n => String(n).padStart(2,'0');
+  return `${now.getFullYear()}-${p(now.getMonth()+1)}-${p(now.getDate())}`;
+}
+function matchRow(m, highlight){
+  return `<div class="match${highlight?' in-today':''}">
+    <div class="mtime"><b>${m.t}</b><small>בית ${m.g}</small></div>
+    <div class="mteams">
+      <div class="mt"><span class="fl">${getFlag(m.h)}</span>${m.h}</div>
+      <div class="mt"><span class="fl">${getFlag(m.a)}</span>${m.a}</div>
+    </div>
+  </div>`;
+}
+function renderToday(){
+  const wrap = document.getElementById('today-wrap');
+  const today = todayISO();
+  const games = FIXTURES.filter(m => m.d === today);
+  let inner;
+  if(games.length){
+    inner = games.map(m => matchRow(m, false)).join('');
+  } else {
+    // אם אין משחקים היום, מציגים את היום הקרוב הבא
+    const next = FIXTURES.filter(m => m.d > today).map(m=>m.d).sort()[0];
+    if(next){
+      const ng = FIXTURES.filter(m => m.d === next);
+      inner = `<div class="none">אין משחקים היום. הקרובים — ${fmtDay(next)}:</div>` + ng.map(m=>matchRow(m,false)).join('');
+    } else {
+      inner = `<div class="none">שלב הבתים הסתיים — עקבו אחרי הנוקאאוט בלוח החיצוני.</div>`;
+    }
+  }
+  wrap.innerHTML = `<div class="today-block">
+    <div class="th"><span class="live-dot"></span><b>${games.length?'משחקי היום':'המשחקים הקרובים'}</b></div>
+    ${inner}
+  </div>`;
+}
+function renderSchedule(){
+  const wrap = document.getElementById('sched-wrap');
+  const today = todayISO();
+  let html = '', lastDay = '';
+  FIXTURES.forEach(m=>{
+    if(m.d !== lastDay){ html += `<div class="day-head"><span>${fmtDay(m.d)}</span></div>`; lastDay = m.d; }
+    html += matchRow(m, m.d === today);
+  });
+  wrap.innerHTML = html;
+}
+
 /* אתחול */
-document.getElementById('cta-lb').href = FORM_URL;
-document.getElementById('cta-taken').href = FORM_URL;
-document.getElementById('pay-lb').href = PAYMENT_URL;
 renderTeams();
+renderSchedule();
+renderToday();
 loadAll();
 setInterval(loadAll, 60000);
+setInterval(renderToday, 60000);
 </script>
 </body>
 </html>
