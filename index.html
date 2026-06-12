@@ -155,6 +155,11 @@ main{flex:1;padding:0 16px 100px}
 .intro p{font-size:12.5px;color:var(--dim);line-height:1.55}
 .intro p b{color:var(--ink)}
 
+/* תג קוד-מדינה לדגלים שלא נתמכים בכל המכשירים (אנגליה/סקוטלנד/שוודיה/צ׳כיה) */
+.fc{display:inline-block;font-family:'Heebo',sans-serif;font-size:9px;font-weight:900;line-height:1.5;
+  letter-spacing:.5px;border-radius:4px;padding:1px 4px;vertical-align:middle;direction:ltr;
+  box-shadow:0 0 0 1px rgba(255,255,255,.18) inset}
+
 .h-sec{display:flex;align-items:center;justify-content:space-between;margin:18px 4px 10px}
 .h-sec h2{font-family:'Secular One';font-size:17px}
 .h-sec small{font-size:11px;color:var(--faint)}
@@ -194,8 +199,13 @@ main{flex:1;padding:0 16px 100px}
 .match .mtime b{font-family:'Secular One';font-size:14px;display:block}
 .match .mtime small{font-size:9px;color:var(--faint);font-weight:700}
 .match .mteams{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}
-.match .mt{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.match .mt .fl{font-size:17px}
+.match .mt{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;min-width:0}
+.match .mt .fl{font-size:17px;flex:0 0 auto}
+.match .mn{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.match .mg{flex:0 0 auto;font-family:'Secular One';font-size:16px;min-width:18px;text-align:center;color:var(--dim)}
+.match .mt.win{color:var(--green)}
+.match .mt.win .mg{color:var(--green)}
+.match .mtime .fin{color:var(--green);font-size:12px}
 .match .grp{flex:0 0 auto;font-size:10px;font-weight:800;color:var(--faint);background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:3px 7px}
 .match.in-today{border-color:rgba(25,224,122,.35);background:linear-gradient(180deg,rgba(25,224,122,.07),var(--panel))}
 .ko-note{margin-top:16px;background:var(--panel);border:1px dashed var(--line2);border-radius:14px;padding:13px 15px;font-size:12px;color:var(--dim);line-height:1.7;text-align:center}
@@ -292,11 +302,6 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-w
         <div class="big">לוח המשחקים</div>
         <div class="meta">כל 72 משחקי שלב הבתים · שעות לפי שעון ישראל</div>
       </div>
-      <a class="pick-cta" href="https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/scores-fixtures" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#3d7dff,#2a5bb0);box-shadow:0 14px 30px -12px rgba(61,125,255,.7);color:#fff;animation:none">
-        <span class="pick-emoji">📺</span>
-        <span class="pick-text"><b>תוצאות חיות + שלבי הנוקאאוט</b><small>הלוח הרשמי המלא ב-FIFA.com</small></span>
-        <span class="pick-arrow">←</span>
-      </a>
       <div id="sched-wrap"></div>
       <div class="ko-note">
         <b>שלבי הנוקאאוט</b><br>
@@ -326,7 +331,7 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-w
 /* ===== נתוני נבחרות — סידינג FIFA ‏1 באפריל 2026 ===== */
 const TEAMS = {
   'צרפת':{fl:'🇫🇷',cat:1,rank:1},'ספרד':{fl:'🇪🇸',cat:1,rank:2},'ארגנטינה':{fl:'🇦🇷',cat:1,rank:3},
-  'אנגליה':{fl:'🏴',cat:1,rank:4},'פורטוגל':{fl:'🇵🇹',cat:1,rank:5},'ברזיל':{fl:'🇧🇷',cat:1,rank:6},
+  'אנגליה':{fl:'<span class="fc" style="background:#fff;color:#c8102e">ENG</span>',cat:1,rank:4},'פורטוגל':{fl:'🇵🇹',cat:1,rank:5},'ברזיל':{fl:'🇧🇷',cat:1,rank:6},
   'הולנד':{fl:'🇳🇱',cat:2,rank:7},'מרוקו':{fl:'🇲🇦',cat:2,rank:8},'בלגיה':{fl:'🇧🇪',cat:2,rank:9},
   'גרמניה':{fl:'🇩🇪',cat:2,rank:10},'קרואטיה':{fl:'🇭🇷',cat:2,rank:11},'קולומביה':{fl:'🇨🇴',cat:2,rank:13},
   'סנגל':{fl:'🇸🇳',cat:3,rank:14},'מקסיקו':{fl:'🇲🇽',cat:3,rank:15},'ארה״ב':{fl:'🇺🇸',cat:3,rank:16},
@@ -335,8 +340,8 @@ const TEAMS = {
   'אוסטריה':{fl:'🇦🇹',cat:4,rank:24},'דרום קוריאה':{fl:'🇰🇷',cat:4,rank:25},'אוסטרליה':{fl:'🇦🇺',cat:4,rank:27},
   'אלג׳יריה':{fl:'🇩🇿',cat:5,rank:28},'מצרים':{fl:'🇪🇬',cat:5,rank:29},'קנדה':{fl:'🇨🇦',cat:5,rank:30},
   'נורווגיה':{fl:'🇳🇴',cat:5,rank:31},'פנמה':{fl:'🇵🇦',cat:5,rank:33},'חוף השנהב':{fl:'🇨🇮',cat:5,rank:34},
-  'שוודיה':{fl:'🇸🇪',cat:6,rank:38},'פרגוואי':{fl:'🇵🇾',cat:6,rank:40},'צ׳כיה':{fl:'🇨🇿',cat:6,rank:41},
-  'סקוטלנד':{fl:'🏴',cat:6,rank:43},'טוניסיה':{fl:'🇹🇳',cat:6,rank:44},'קונגו':{fl:'🇨🇩',cat:6,rank:46},
+  'שוודיה':{fl:'<span class="fc" style="background:#006aa7;color:#fecc02">SWE</span>',cat:6,rank:38},'פרגוואי':{fl:'🇵🇾',cat:6,rank:40},'צ׳כיה':{fl:'<span class="fc" style="background:#11457e;color:#fff">CZE</span>',cat:6,rank:41},
+  'סקוטלנד':{fl:'<span class="fc" style="background:#0065bf;color:#fff">SCO</span>',cat:6,rank:43},'טוניסיה':{fl:'🇹🇳',cat:6,rank:44},'קונגו':{fl:'🇨🇩',cat:6,rank:46},
   'אוזבקיסטן':{fl:'🇺🇿',cat:7,rank:50},'קטאר':{fl:'🇶🇦',cat:7,rank:55},'עיראק':{fl:'🇮🇶',cat:7,rank:57},
   'דרום אפריקה':{fl:'🇿🇦',cat:7,rank:60},'ערב הסעודית':{fl:'🇸🇦',cat:7,rank:61},'ירדן':{fl:'🇯🇴',cat:7,rank:63},
   'בוסניה':{fl:'🇧🇦',cat:8,rank:65},'כף ורדה':{fl:'🇨🇻',cat:8,rank:69},'גאנה':{fl:'🇬🇭',cat:8,rank:74},
@@ -364,14 +369,18 @@ function tableToRows(table){
 }
 
 let TEAM_POINTS = {};
+let RESULTS = {};  // מפתח זוג-נבחרות → {שם נבחרת מנורמל: שערים}
+function normName(s){ return String(s||'').trim().replace(/["'״׳’]/g,'').replace(/\s+/g,''); }
+function pairKey(x,y){ return [normName(x), normName(y)].sort().join('|'); }
 
 async function loadAll(){
   const btn = document.getElementById('refBtn');
   btn.classList.add('spinning');
   try{
-    const [resultsTable, rankTable] = await Promise.all([
+    const [resultsTable, rankTable, matchesTable] = await Promise.all([
       fetchSheet('תוצאות').catch(()=>null),
-      fetchSheet('דירוג')
+      fetchSheet('דירוג'),
+      fetchSheet('משחקים').catch(()=>null)
     ]);
     TEAM_POINTS = {};
     if(resultsTable){
@@ -380,8 +389,19 @@ async function loadAll(){
         if(name) TEAM_POINTS[name] = Number(r[4])||0;
       });
     }
+    // לוח התוצאות: עמודות בית / חוץ / שערי בית / שערי חוץ
+    RESULTS = {};
+    if(matchesTable){
+      tableToRows(matchesTable).forEach(r=>{
+        const t1=String(r[0]||'').trim(), t2=String(r[1]||'').trim(), g1=r[2], g2=r[3];
+        const has = g1!=='' && g1!=null && g2!=='' && g2!=null;
+        if(t1 && t2 && has){ RESULTS[pairKey(t1,t2)] = {[normName(t1)]:Number(g1), [normName(t2)]:Number(g2)}; }
+      });
+    }
     const entries = tableToRows(rankTable).filter(r => r[1] && String(r[1]).trim() !== '');
     renderLeaderboard(entries);
+    renderSchedule();   // עדכון הלוח עם התוצאות
+    renderToday();
     const now = new Date();
     document.getElementById('updated-label').textContent =
       `עודכן לאחרונה: ${now.toLocaleTimeString('he-IL')} · מתרענן אוטומטית כל דקה`;
@@ -573,33 +593,43 @@ function todayISO(){
   return `${now.getFullYear()}-${p(now.getMonth()+1)}-${p(now.getDate())}`;
 }
 function matchRow(m, highlight){
-  return `<div class="match${highlight?' in-today':''}">
-    <div class="mtime"><b>${m.t}</b><small>בית ${m.g}</small></div>
+  const res = RESULTS[pairKey(m.h, m.a)];
+  const has = !!res;
+  const gh = has ? res[normName(m.h)] : null;
+  const ga = has ? res[normName(m.a)] : null;
+  const winH = has && gh > ga, winA = has && ga > gh;
+  const left = has ? `<b class="fin">סופי</b><small>בית ${m.g}</small>`
+                   : `<b>${m.t}</b><small>בית ${m.g}</small>`;
+  const goal = g => g==null ? '' : `<span class="mg">${g}</span>`;
+  return `<div class="match${highlight?' in-today':''}${has?' done':''}">
+    <div class="mtime">${left}</div>
     <div class="mteams">
-      <div class="mt"><span class="fl">${getFlag(m.h)}</span>${m.h}</div>
-      <div class="mt"><span class="fl">${getFlag(m.a)}</span>${m.a}</div>
+      <div class="mt${winH?' win':''}"><span class="fl">${getFlag(m.h)}</span><span class="mn">${m.h}</span>${goal(gh)}</div>
+      <div class="mt${winA?' win':''}"><span class="fl">${getFlag(m.a)}</span><span class="mn">${m.a}</span>${goal(ga)}</div>
     </div>
   </div>`;
 }
+
 function renderToday(){
   const wrap = document.getElementById('today-wrap');
   const today = todayISO();
-  const games = FIXTURES.filter(m => m.d === today);
-  let inner;
+  const games = FIXTURES.filter(m => m.d === today);   // כל משחקי היום, כולל אלו שהסתיימו
+  let inner, title;
   if(games.length){
+    title = 'משחקי היום';
     inner = games.map(m => matchRow(m, false)).join('');
   } else {
-    // אם אין משחקים היום, מציגים את היום הקרוב הבא
-    const next = FIXTURES.filter(m => m.d > today).map(m=>m.d).sort()[0];
-    if(next){
-      const ng = FIXTURES.filter(m => m.d === next);
-      inner = `<div class="none">אין משחקים היום. הקרובים — ${fmtDay(next)}:</div>` + ng.map(m=>matchRow(m,false)).join('');
+    title = 'המשחקים הקרובים';
+    const nd = [...new Set(FIXTURES.filter(m => m.d > today).map(m => m.d))].sort()[0];
+    if(nd){
+      const ng = FIXTURES.filter(m => m.d === nd);
+      inner = `<div class="none">אין משחקים היום. הקרובים — ${fmtDay(nd)}:</div>` + ng.map(m => matchRow(m, false)).join('');
     } else {
-      inner = `<div class="none">שלב הבתים הסתיים — עקבו אחרי הנוקאאוט בלוח החיצוני.</div>`;
+      inner = `<div class="none">שלב הבתים הסתיים — עקבו אחרי שלבי הנוקאאוט.</div>`;
     }
   }
   wrap.innerHTML = `<div class="today-block">
-    <div class="th"><span class="live-dot"></span><b>${games.length?'משחקי היום':'המשחקים הקרובים'}</b></div>
+    <div class="th"><span class="live-dot"></span><b>${title}</b></div>
     ${inner}
   </div>`;
 }
