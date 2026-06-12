@@ -155,11 +155,6 @@ main{flex:1;padding:0 16px 100px}
 .intro p{font-size:12.5px;color:var(--dim);line-height:1.55}
 .intro p b{color:var(--ink)}
 
-/* תג קוד-מדינה לדגלים שלא נתמכים בכל המכשירים (אנגליה/סקוטלנד/שוודיה/צ׳כיה) */
-.fc{display:inline-block;font-family:'Heebo',sans-serif;font-size:9px;font-weight:900;line-height:1.5;
-  letter-spacing:.5px;border-radius:4px;padding:1px 4px;vertical-align:middle;direction:ltr;
-  box-shadow:0 0 0 1px rgba(255,255,255,.18) inset}
-
 .h-sec{display:flex;align-items:center;justify-content:space-between;margin:18px 4px 10px}
 .h-sec h2{font-family:'Secular One';font-size:17px}
 .h-sec small{font-size:11px;color:var(--faint)}
@@ -331,7 +326,7 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-w
 /* ===== נתוני נבחרות — סידינג FIFA ‏1 באפריל 2026 ===== */
 const TEAMS = {
   'צרפת':{fl:'🇫🇷',cat:1,rank:1},'ספרד':{fl:'🇪🇸',cat:1,rank:2},'ארגנטינה':{fl:'🇦🇷',cat:1,rank:3},
-  'אנגליה':{fl:'<span class="fc" style="background:#fff;color:#c8102e">ENG</span>',cat:1,rank:4},'פורטוגל':{fl:'🇵🇹',cat:1,rank:5},'ברזיל':{fl:'🇧🇷',cat:1,rank:6},
+  'אנגליה':{fl:'🏴',cat:1,rank:4},'פורטוגל':{fl:'🇵🇹',cat:1,rank:5},'ברזיל':{fl:'🇧🇷',cat:1,rank:6},
   'הולנד':{fl:'🇳🇱',cat:2,rank:7},'מרוקו':{fl:'🇲🇦',cat:2,rank:8},'בלגיה':{fl:'🇧🇪',cat:2,rank:9},
   'גרמניה':{fl:'🇩🇪',cat:2,rank:10},'קרואטיה':{fl:'🇭🇷',cat:2,rank:11},'קולומביה':{fl:'🇨🇴',cat:2,rank:13},
   'סנגל':{fl:'🇸🇳',cat:3,rank:14},'מקסיקו':{fl:'🇲🇽',cat:3,rank:15},'ארה״ב':{fl:'🇺🇸',cat:3,rank:16},
@@ -340,8 +335,8 @@ const TEAMS = {
   'אוסטריה':{fl:'🇦🇹',cat:4,rank:24},'דרום קוריאה':{fl:'🇰🇷',cat:4,rank:25},'אוסטרליה':{fl:'🇦🇺',cat:4,rank:27},
   'אלג׳יריה':{fl:'🇩🇿',cat:5,rank:28},'מצרים':{fl:'🇪🇬',cat:5,rank:29},'קנדה':{fl:'🇨🇦',cat:5,rank:30},
   'נורווגיה':{fl:'🇳🇴',cat:5,rank:31},'פנמה':{fl:'🇵🇦',cat:5,rank:33},'חוף השנהב':{fl:'🇨🇮',cat:5,rank:34},
-  'שוודיה':{fl:'<span class="fc" style="background:#006aa7;color:#fecc02">SWE</span>',cat:6,rank:38},'פרגוואי':{fl:'🇵🇾',cat:6,rank:40},'צ׳כיה':{fl:'<span class="fc" style="background:#11457e;color:#fff">CZE</span>',cat:6,rank:41},
-  'סקוטלנד':{fl:'<span class="fc" style="background:#0065bf;color:#fff">SCO</span>',cat:6,rank:43},'טוניסיה':{fl:'🇹🇳',cat:6,rank:44},'קונגו':{fl:'🇨🇩',cat:6,rank:46},
+  'שוודיה':{fl:'🇸🇪',cat:6,rank:38},'פרגוואי':{fl:'🇵🇾',cat:6,rank:40},'צ׳כיה':{fl:'🇨🇿',cat:6,rank:41},
+  'סקוטלנד':{fl:'🏴',cat:6,rank:43},'טוניסיה':{fl:'🇹🇳',cat:6,rank:44},'קונגו':{fl:'🇨🇩',cat:6,rank:46},
   'אוזבקיסטן':{fl:'🇺🇿',cat:7,rank:50},'קטאר':{fl:'🇶🇦',cat:7,rank:55},'עיראק':{fl:'🇮🇶',cat:7,rank:57},
   'דרום אפריקה':{fl:'🇿🇦',cat:7,rank:60},'ערב הסעודית':{fl:'🇸🇦',cat:7,rank:61},'ירדן':{fl:'🇯🇴',cat:7,rank:63},
   'בוסניה':{fl:'🇧🇦',cat:8,rank:65},'כף ורדה':{fl:'🇨🇻',cat:8,rank:69},'גאנה':{fl:'🇬🇭',cat:8,rank:74},
