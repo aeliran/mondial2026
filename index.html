@@ -143,6 +143,9 @@ main{flex:1;padding:0 16px 100px}
 .bd-item .tn b{font-size:12.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bd-item .tn small{font-size:9.5px;color:var(--faint)}
 .bd-item .pt{font-family:'Secular One';font-size:13px;color:var(--green)}
+.bd-item.out{opacity:.55}
+.bd-item.out .tn b{text-decoration:line-through}
+.bd-item.out .tn small{color:#ff6b6b}
 
 .state-card{text-align:center;padding:44px 20px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);color:var(--dim)}
 .state-card .em{font-size:44px;margin-bottom:12px}
@@ -169,6 +172,9 @@ main{flex:1;padding:0 16px 100px}
 .t-card .fl{font-size:26px}
 .t-card .nm{font-size:11.5px;font-weight:700;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 2px}
 .t-card .rk{font-size:9.5px;color:var(--faint);direction:ltr}
+.t-card.out{opacity:.5}
+.t-card.out .nm{text-decoration:line-through}
+.t-card .out-tag{font-size:9px;font-weight:800;color:#ff6b6b;background:rgba(255,107,107,.12);border:1px solid rgba(255,107,107,.3);border-radius:6px;padding:1px 5px;display:inline-block;margin-top:1px}
 
 /* תקנון */
 .rules{display:flex;flex-direction:column;gap:9px;margin-top:4px}
@@ -365,8 +371,10 @@ function tableToRows(table){
 
 let TEAM_POINTS = {};
 let RESULTS = {};  // מפתח זוג-נבחרות → {שם נבחרת מנורמל: שערים}
+let STATUS = {};   // שם נבחרת מנורמל → true אם הודחה
 function normName(s){ return String(s||'').trim().replace(/["'״׳’]/g,'').replace(/\s+/g,''); }
 function pairKey(x,y){ return [normName(x), normName(y)].sort().join('|'); }
+function isOut(name){ return !!STATUS[normName(name)]; }
 
 async function loadAll(){
   const btn = document.getElementById('refBtn');
@@ -378,10 +386,14 @@ async function loadAll(){
       fetchSheet('משחקים').catch(()=>null)
     ]);
     TEAM_POINTS = {};
+    STATUS = {};
     if(resultsTable){
       tableToRows(resultsTable).forEach(r=>{
         const name = String(r[0]||'').trim();
-        if(name) TEAM_POINTS[name] = Number(r[4])||0;
+        if(!name) return;
+        TEAM_POINTS[name] = Number(r[4])||0;
+        // הודחה = יש בשורה (מעבר לעמודת השם) תא שכתוב בו "הודחה"
+        if(r.slice(1).some(c => String(c||'').trim() === 'הודחה')) STATUS[normName(name)] = true;
       });
     }
     // לוח התוצאות: עמודות בית / חוץ / שערי בית / שערי חוץ
@@ -397,6 +409,7 @@ async function loadAll(){
     renderLeaderboard(entries);
     renderSchedule();   // עדכון הלוח עם התוצאות
     renderToday();
+    renderTeams();      // עדכון סטטוס הודחו ברשימת הנבחרות
     const now = new Date();
     document.getElementById('updated-label').textContent =
       `עודכן לאחרונה: ${now.toLocaleTimeString('he-IL')} · מתרענן אוטומטית כל דקה`;
@@ -452,9 +465,9 @@ function renderLeaderboard(entries){
     const rc = rank===1?'r1':rank===2?'r2':rank===3?'r3':'';
     const teams = key ? key.split('-') : [];
     const bd = teams.map(t=>{
-      const tn=t.trim(), info=TEAMS[tn]||{}, tp=TEAM_POINTS[tn]||0;
-      return `<div class="bd-item"><span class="fl">${info.fl||'🏳'}</span>
-        <span class="tn"><b>${tn}</b><small>קטגוריה ${info.cat||'?'}</small></span>
+      const tn=t.trim(), info=TEAMS[tn]||{}, tp=TEAM_POINTS[tn]||0, out=isOut(tn);
+      return `<div class="bd-item${out?' out':''}"><span class="fl">${info.fl||'🏳'}</span>
+        <span class="tn"><b>${tn}</b><small>${out?'הודחה ✗':'קטגוריה '+(info.cat||'?')}</small></span>
         <span class="pt">${tp}</span></div>`;
     }).join('');
     return `<div class="lb-row" onclick="this.classList.toggle('open')">
@@ -484,7 +497,7 @@ function renderTeams(){
       <div class="cat-head-row"><div class="cat-badge">${c}</div>
         <div><b>קטגוריה ${c}</b> <small>· ${CAT_LABEL[c]}</small></div></div>
       <div class="teams-grid">${cats.map(([n,i])=>`
-        <div class="t-card"><div class="fl">${i.fl}</div><div class="nm">${n}</div><div class="rk">#${i.rank}</div></div>`).join('')}
+        <div class="t-card${isOut(n)?' out':''}"><div class="fl">${i.fl}</div><div class="nm">${n}</div>${isOut(n)?'<div class="out-tag">הודחה</div>':`<div class="rk">#${i.rank}</div>`}</div>`).join('')}
       </div></div>`;
   }
   document.getElementById('teams-wrap').innerHTML = html;
