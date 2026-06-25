@@ -171,10 +171,23 @@ main{flex:1;padding:0 16px 100px}
 .t-card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:12px 6px;text-align:center}
 .t-card .fl{font-size:26px}
 .t-card .nm{font-size:11.5px;font-weight:700;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 2px}
-.t-card .rk{font-size:9.5px;color:var(--faint);direction:ltr}
+.t-card{cursor:pointer;transition:transform .12s,border-color .12s}
+.t-card:active{transform:scale(.97)}
+.t-card .picks{font-size:10.5px;color:var(--green);font-weight:800;margin-top:1px}
+.t-card .out-mini{color:#ff6b6b;font-weight:800}
 .t-card.out{opacity:.5}
 .t-card.out .nm{text-decoration:line-through}
-.t-card .out-tag{font-size:9px;font-weight:800;color:#ff6b6b;background:rgba(255,107,107,.12);border:1px solid rgba(255,107,107,.3);border-radius:6px;padding:1px 5px;display:inline-block;margin-top:1px}
+.t-card.out .picks{color:var(--faint)}
+
+/* חלון בוחרים */
+.modal-overlay{position:fixed;inset:0;background:rgba(4,10,20,.72);backdrop-filter:blur(3px);z-index:200;display:none;align-items:center;justify-content:center;padding:24px}
+.modal-overlay.show{display:flex;animation:fade .15s ease both}
+.modal-box{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line2);border-radius:18px;width:100%;max-width:340px;max-height:72vh;overflow:auto;padding:20px 18px;position:relative;box-shadow:0 24px 60px -20px rgba(0,0,0,.7)}
+.modal-x{position:absolute;top:12px;left:12px;width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--dim);font-size:14px;cursor:pointer;display:grid;place-items:center}
+.modal-title{font-family:'Secular One';font-size:20px;margin-bottom:4px;padding-left:34px}
+.modal-sub{font-size:12.5px;color:var(--faint);margin-bottom:14px}
+.modal-list{display:flex;flex-direction:column;gap:7px}
+.pk-name{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:13.5px;font-weight:600}
 
 /* תקנון */
 .rules{display:flex;flex-direction:column;gap:9px;margin-top:4px}
@@ -328,6 +341,15 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-w
   </nav>
 </div>
 
+<div class="modal-overlay" id="pickers-modal" onclick="if(event.target===this)closePickers()">
+  <div class="modal-box">
+    <button class="modal-x" onclick="closePickers()" aria-label="סגור">✕</button>
+    <div class="modal-title" id="pickers-title"></div>
+    <div class="modal-sub" id="pickers-sub"></div>
+    <div class="modal-list" id="pickers-list"></div>
+  </div>
+</div>
+
 <script>
 /* ===== נתוני נבחרות — סידינג FIFA ‏1 באפריל 2026 ===== */
 const TEAMS = {
@@ -372,6 +394,7 @@ function tableToRows(table){
 let TEAM_POINTS = {};
 let RESULTS = {};  // מפתח זוג-נבחרות → {שם נבחרת מנורמל: שערים}
 let STATUS = {};   // שם נבחרת מנורמל → true אם הודחה
+let TEAM_PICKERS = {};  // שם נבחרת מנורמל → רשימת שמות המשתתפים שבחרו
 function normName(s){ return String(s||'').trim().replace(/["'״׳’]/g,'').replace(/\s+/g,''); }
 function pairKey(x,y){ return [normName(x), normName(y)].sort().join('|'); }
 function isOut(name){ return !!STATUS[normName(name)]; }
@@ -406,6 +429,19 @@ async function loadAll(){
       });
     }
     const entries = tableToRows(rankTable).filter(r => r[1] && String(r[1]).trim() !== '');
+    // מי בחר כל נבחרת — לפי מפתח הבית של כל משתתף
+    TEAM_PICKERS = {};
+    entries.forEach(r=>{
+      const pname = String(r[1]||'').trim();
+      const key = String(r[2]||'').trim();
+      if(!pname || !key) return;
+      key.split('-').forEach(t=>{
+        const k = normName(t);
+        if(!k) return;
+        if(!TEAM_PICKERS[k]) TEAM_PICKERS[k] = [];
+        TEAM_PICKERS[k].push(pname);   // כל בית נספר בנפרד — אותו משתתף בכמה בתים נספר לכל בית
+      });
+    });
     renderLeaderboard(entries);
     renderSchedule();   // עדכון הלוח עם התוצאות
     renderToday();
@@ -496,12 +532,29 @@ function renderTeams(){
     html += `<div class="cat-block">
       <div class="cat-head-row"><div class="cat-badge">${c}</div>
         <div><b>קטגוריה ${c}</b> <small>· ${CAT_LABEL[c]}</small></div></div>
-      <div class="teams-grid">${cats.map(([n,i])=>`
-        <div class="t-card${isOut(n)?' out':''}"><div class="fl">${i.fl}</div><div class="nm">${n}</div>${isOut(n)?'<div class="out-tag">הודחה</div>':`<div class="rk">#${i.rank}</div>`}</div>`).join('')}
+      <div class="teams-grid">${cats.map(([n,i])=>{
+        const cnt=(TEAM_PICKERS[normName(n)]||[]).length;
+        return `<div class="t-card${isOut(n)?' out':''}" onclick="showPickers('${n}')">
+          <div class="fl">${i.fl}</div>
+          <div class="nm">${n}</div>
+          <div class="picks">${cnt} בחרו${isOut(n)?' · <span class="out-mini">הודחה</span>':''}</div>
+        </div>`;}).join('')}
       </div></div>`;
   }
   document.getElementById('teams-wrap').innerHTML = html;
 }
+
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function showPickers(name){
+  const list = (TEAM_PICKERS[normName(name)]||[]).slice().sort((a,b)=>a.localeCompare(b,'he'));
+  document.getElementById('pickers-title').innerHTML = `${getFlag(name)} ${escapeHtml(name)}`;
+  document.getElementById('pickers-sub').textContent =
+    list.length ? `${list.length} בחרו את הנבחרת הזו` : 'אף אחד עדיין לא בחר את הנבחרת הזו';
+  document.getElementById('pickers-list').innerHTML =
+    list.map(nm => `<div class="pk-name">${escapeHtml(nm)}</div>`).join('');
+  document.getElementById('pickers-modal').classList.add('show');
+}
+function closePickers(){ document.getElementById('pickers-modal').classList.remove('show'); }
 
 function switchTab(name){
   ['lb','sched','teams','rules'].forEach(t=>{
