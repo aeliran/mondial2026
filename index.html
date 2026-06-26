@@ -522,7 +522,8 @@ function renderLeaderboard(entries){
     const medal = rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':rank;
     const rc = rank===1?'r1':rank===2?'r2':rank===3?'r3':'';
     const teams = key ? key.split('-') : [];
-    const bd = teams.map(t=>{
+    const teamsByCat = teams.slice().sort((a,b)=>((TEAMS[canonName(a)]||{}).cat||99)-((TEAMS[canonName(b)]||{}).cat||99));
+    const bd = teamsByCat.map(t=>{
       const tn=t.trim(), cn=canonName(tn), info=TEAMS[cn]||{}, out=isOut(tn);
       const tp=(TEAM_POINTS[tn] ?? TEAM_POINTS[normName(tn)] ?? 0);
       return `<div class="bd-item${out?' out':''}"><span class="fl">${getFlag(tn)}</span>
@@ -532,7 +533,7 @@ function renderLeaderboard(entries){
     return `<div class="lb-row" onclick="this.classList.toggle('open')">
       <div class="lb-main">
         <div class="rank ${rc}">${medal}</div>
-        <div class="lb-info"><b>${name}</b><small>${teams.map(getFlag).join(' ')}</small></div>
+        <div class="lb-info"><b>${name}</b><small>${teamsByCat.map(getFlag).join(' ')}</small></div>
         <div class="lb-score">${pts}<span>נק׳</span></div>
         <div class="chev">⌄</div>
       </div>
