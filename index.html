@@ -173,11 +173,14 @@ main{flex:1;padding:0 16px 100px}
 .t-card .nm{font-size:11.5px;font-weight:700;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 2px}
 .t-card{cursor:pointer;transition:transform .12s,border-color .12s}
 .t-card:active{transform:scale(.97)}
-.t-card .picks{font-size:10.5px;color:var(--green);font-weight:800;margin-top:1px}
+.t-card .t-stats{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px;margin-top:2px;font-size:10.5px;font-weight:800}
+.t-card .ts-pts{color:var(--gold)}
+.t-card .ts-cnt{color:var(--green)}
+.t-card .ts-sep{color:var(--faint)}
 .t-card .out-mini{color:#ff6b6b;font-weight:800}
 .t-card.out{opacity:.5}
 .t-card.out .nm{text-decoration:line-through}
-.t-card.out .picks{color:var(--faint)}
+.t-card.out .ts-pts,.t-card.out .ts-cnt{color:var(--faint)}
 
 /* חלון בוחרים */
 .modal-overlay{position:fixed;inset:0;background:rgba(4,10,20,.72);backdrop-filter:blur(3px);z-index:200;display:none;align-items:center;justify-content:center;padding:24px}
@@ -414,7 +417,9 @@ async function loadAll(){
       tableToRows(resultsTable).forEach(r=>{
         const name = String(r[0]||'').trim();
         if(!name) return;
-        TEAM_POINTS[name] = Number(r[4])||0;
+        const pts = Number(r[4])||0;
+        TEAM_POINTS[name] = pts;
+        TEAM_POINTS[normName(name)] = pts;   // מפתח מנורמל לחסינות מהבדלי פיסוק
         // הודחה = יש בשורה (מעבר לעמודת השם) תא שכתוב בו "הודחה"
         if(r.slice(1).some(c => String(c||'').trim() === 'הודחה')) STATUS[normName(name)] = true;
       });
@@ -534,10 +539,11 @@ function renderTeams(){
         <div><b>קטגוריה ${c}</b> <small>· ${CAT_LABEL[c]}</small></div></div>
       <div class="teams-grid">${cats.map(([n,i])=>{
         const cnt=(TEAM_PICKERS[normName(n)]||[]).length;
+        const pts=TEAM_POINTS[n] ?? TEAM_POINTS[normName(n)] ?? 0;
         return `<div class="t-card${isOut(n)?' out':''}" onclick="showPickers('${n}')">
           <div class="fl">${i.fl}</div>
           <div class="nm">${n}</div>
-          <div class="picks">${cnt} בחרו${isOut(n)?' · <span class="out-mini">הודחה</span>':''}</div>
+          <div class="t-stats"><span class="ts-pts">${pts} נק׳</span><span class="ts-sep">·</span><span class="ts-cnt">${cnt} בחרו</span>${isOut(n)?'<span class="ts-sep">·</span><span class="out-mini">הודחה</span>':''}</div>
         </div>`;}).join('')}
       </div></div>`;
   }
