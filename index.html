@@ -357,7 +357,7 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-w
 /* ===== נתוני נבחרות — סידינג FIFA ‏1 באפריל 2026 ===== */
 const TEAMS = {
   'צרפת':{fl:'🇫🇷',cat:1,rank:1},'ספרד':{fl:'🇪🇸',cat:1,rank:2},'ארגנטינה':{fl:'🇦🇷',cat:1,rank:3},
-  'אנגליה':{fl:'🏴',cat:1,rank:4},'פורטוגל':{fl:'🇵🇹',cat:1,rank:5},'ברזיל':{fl:'🇧🇷',cat:1,rank:6},
+  'אנגליה':{fl:'<svg viewBox="0 0 20 14" style="height:.8em;width:1.15em;vertical-align:-.1em;border-radius:2px" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="14" fill="#fff"/><rect x="8" width="4" height="14" fill="#ce1124"/><rect y="5" width="20" height="4" fill="#ce1124"/></svg>',cat:1,rank:4},'פורטוגל':{fl:'🇵🇹',cat:1,rank:5},'ברזיל':{fl:'🇧🇷',cat:1,rank:6},
   'הולנד':{fl:'🇳🇱',cat:2,rank:7},'מרוקו':{fl:'🇲🇦',cat:2,rank:8},'בלגיה':{fl:'🇧🇪',cat:2,rank:9},
   'גרמניה':{fl:'🇩🇪',cat:2,rank:10},'קרואטיה':{fl:'🇭🇷',cat:2,rank:11},'קולומביה':{fl:'🇨🇴',cat:2,rank:13},
   'סנגל':{fl:'🇸🇳',cat:3,rank:14},'מקסיקו':{fl:'🇲🇽',cat:3,rank:15},'ארה״ב':{fl:'🇺🇸',cat:3,rank:16},
@@ -366,8 +366,8 @@ const TEAMS = {
   'אוסטריה':{fl:'🇦🇹',cat:4,rank:24},'דרום קוריאה':{fl:'🇰🇷',cat:4,rank:25},'אוסטרליה':{fl:'🇦🇺',cat:4,rank:27},
   'אלג׳יריה':{fl:'🇩🇿',cat:5,rank:28},'מצרים':{fl:'🇪🇬',cat:5,rank:29},'קנדה':{fl:'🇨🇦',cat:5,rank:30},
   'נורווגיה':{fl:'🇳🇴',cat:5,rank:31},'פנמה':{fl:'🇵🇦',cat:5,rank:33},'חוף השנהב':{fl:'🇨🇮',cat:5,rank:34},
-  'שוודיה':{fl:'🇸🇪',cat:6,rank:38},'פרגוואי':{fl:'🇵🇾',cat:6,rank:40},'צ׳כיה':{fl:'🇨🇿',cat:6,rank:41},
-  'סקוטלנד':{fl:'🏴',cat:6,rank:43},'טוניסיה':{fl:'🇹🇳',cat:6,rank:44},'קונגו':{fl:'🇨🇩',cat:6,rank:46},
+  'שבדיה':{fl:'🇸🇪',cat:6,rank:38},'פרגוואי':{fl:'🇵🇾',cat:6,rank:40},'צ׳כיה':{fl:'🇨🇿',cat:6,rank:41},
+  'סקוטלנד':{fl:'<svg viewBox="0 0 20 14" style="height:.8em;width:1.15em;vertical-align:-.1em;border-radius:2px" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="14" fill="#0065bf"/><path d="M0,0 L20,14 M20,0 L0,14" stroke="#fff" stroke-width="2.6"/></svg>',cat:6,rank:43},'טוניסיה':{fl:'🇹🇳',cat:6,rank:44},'קונגו':{fl:'🇨🇩',cat:6,rank:46},
   'אוזבקיסטן':{fl:'🇺🇿',cat:7,rank:50},'קטאר':{fl:'🇶🇦',cat:7,rank:55},'עיראק':{fl:'🇮🇶',cat:7,rank:57},
   'דרום אפריקה':{fl:'🇿🇦',cat:7,rank:60},'ערב הסעודית':{fl:'🇸🇦',cat:7,rank:61},'ירדן':{fl:'🇯🇴',cat:7,rank:63},
   'בוסניה':{fl:'🇧🇦',cat:8,rank:65},'כף ורדה':{fl:'🇨🇻',cat:8,rank:69},'גאנה':{fl:'🇬🇭',cat:8,rank:74},
@@ -375,7 +375,20 @@ const TEAMS = {
 };
 const CAT_LABEL = {1:'הטובות בעולם',2:'מעצמות',3:'שחקניות מפתח',4:'מאתגרות',5:'מנוסות',6:'אאוטסיידריות',7:'מארחות ואסיה',8:'סינדרלות'};
 const ENTRY_FEE = 200;
-const getFlag = n => (TEAMS[(n||'').trim()]||{fl:'🏳'}).fl;
+let _teamsNorm = null;
+const getFlag = n => {
+  const t = (n||'').trim();
+  if(TEAMS[t]) return TEAMS[t].fl;
+  if(!_teamsNorm){ _teamsNorm = {}; for(const k in TEAMS) _teamsNorm[normName(k)] = TEAMS[k]; }
+  return (_teamsNorm[normName(n)] || {fl:'🏳'}).fl;
+};
+let _canon = null;
+function canonName(n){
+  const t = (n||'').trim();
+  if(TEAMS[t]) return t;
+  if(!_canon){ _canon = {}; for(const k in TEAMS) _canon[normName(k)] = k; }
+  return _canon[normName(n)] || t;   // שם קנוני אחיד לכל וריאנט איות
+}
 
 /* ===== קריאה מגיליון גוגל ===== */
 async function fetchSheet(sheetName){
@@ -398,7 +411,11 @@ let TEAM_POINTS = {};
 let RESULTS = {};  // מפתח זוג-נבחרות → {שם נבחרת מנורמל: שערים}
 let STATUS = {};   // שם נבחרת מנורמל → true אם הודחה
 let TEAM_PICKERS = {};  // שם נבחרת מנורמל → רשימת שמות המשתתפים שבחרו
-function normName(s){ return String(s||'').trim().replace(/["'״׳’]/g,'').replace(/\s+/g,''); }
+const NAME_ALIASES = { 'שוודיה':'שבדיה' };   // וריאנט איות → שם קנוני (אחרי ניקוי פיסוק)
+function normName(s){
+  const t = String(s||'').trim().replace(/["'״׳’]/g,'').replace(/\s+/g,'');
+  return NAME_ALIASES[t] || t;
+}
 function pairKey(x,y){ return [normName(x), normName(y)].sort().join('|'); }
 function isOut(name){ return !!STATUS[normName(name)]; }
 
@@ -506,9 +523,10 @@ function renderLeaderboard(entries){
     const rc = rank===1?'r1':rank===2?'r2':rank===3?'r3':'';
     const teams = key ? key.split('-') : [];
     const bd = teams.map(t=>{
-      const tn=t.trim(), info=TEAMS[tn]||{}, tp=TEAM_POINTS[tn]||0, out=isOut(tn);
-      return `<div class="bd-item${out?' out':''}"><span class="fl">${info.fl||'🏳'}</span>
-        <span class="tn"><b>${tn}</b><small>${out?'הודחה ✗':'קטגוריה '+(info.cat||'?')}</small></span>
+      const tn=t.trim(), cn=canonName(tn), info=TEAMS[cn]||{}, out=isOut(tn);
+      const tp=(TEAM_POINTS[tn] ?? TEAM_POINTS[normName(tn)] ?? 0);
+      return `<div class="bd-item${out?' out':''}"><span class="fl">${getFlag(tn)}</span>
+        <span class="tn"><b>${cn}</b><small>${out?'הודחה ✗':'קטגוריה '+(info.cat||'?')}</small></span>
         <span class="pt">${tp}</span></div>`;
     }).join('');
     return `<div class="lb-row" onclick="this.classList.toggle('open')">
@@ -585,7 +603,7 @@ const FIXTURES = [
   {d:'2026-06-14',t:'20:00',h:'גרמניה',a:'קוראסאו',g:'E'},
   {d:'2026-06-14',t:'23:00',h:'הולנד',a:'יפן',g:'F'},
   {d:'2026-06-15',t:'02:00',h:'חוף השנהב',a:'אקוודור',g:'E'},
-  {d:'2026-06-15',t:'05:00',h:'שוודיה',a:'טוניסיה',g:'F'},
+  {d:'2026-06-15',t:'05:00',h:'שבדיה',a:'טוניסיה',g:'F'},
   {d:'2026-06-15',t:'19:00',h:'ספרד',a:'כף ורדה',g:'H'},
   {d:'2026-06-15',t:'22:00',h:'בלגיה',a:'מצרים',g:'G'},
   {d:'2026-06-16',t:'01:00',h:'ערב הסעודית',a:'אורוגוואי',g:'H'},
@@ -606,7 +624,7 @@ const FIXTURES = [
   {d:'2026-06-20',t:'01:00',h:'סקוטלנד',a:'מרוקו',g:'C'},
   {d:'2026-06-20',t:'03:30',h:'ברזיל',a:'האיטי',g:'C'},
   {d:'2026-06-20',t:'06:00',h:'טורקיה',a:'פרגוואי',g:'D'},
-  {d:'2026-06-20',t:'20:00',h:'הולנד',a:'שוודיה',g:'F'},
+  {d:'2026-06-20',t:'20:00',h:'הולנד',a:'שבדיה',g:'F'},
   {d:'2026-06-20',t:'23:00',h:'גרמניה',a:'חוף השנהב',g:'E'},
   {d:'2026-06-21',t:'03:00',h:'אקוודור',a:'קוראסאו',g:'E'},
   {d:'2026-06-21',t:'07:00',h:'טוניסיה',a:'יפן',g:'F'},
@@ -630,7 +648,7 @@ const FIXTURES = [
   {d:'2026-06-25',t:'04:00',h:'דרום אפריקה',a:'דרום קוריאה',g:'A'},
   {d:'2026-06-25',t:'23:00',h:'אקוודור',a:'גרמניה',g:'E'},
   {d:'2026-06-25',t:'23:00',h:'קוראסאו',a:'חוף השנהב',g:'E'},
-  {d:'2026-06-26',t:'02:00',h:'יפן',a:'שוודיה',g:'F'},
+  {d:'2026-06-26',t:'02:00',h:'יפן',a:'שבדיה',g:'F'},
   {d:'2026-06-26',t:'02:00',h:'טוניסיה',a:'הולנד',g:'F'},
   {d:'2026-06-26',t:'05:00',h:'טורקיה',a:'ארה״ב',g:'D'},
   {d:'2026-06-26',t:'05:00',h:'פרגוואי',a:'אוסטרליה',g:'D'},
