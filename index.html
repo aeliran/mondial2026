@@ -222,7 +222,6 @@ main{flex:1;padding:0 16px 100px}
 .match .mn{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .match .mg{flex:0 0 auto;font-family:'Secular One';font-size:16px;min-width:18px;text-align:center;color:var(--dim)}
 .match .mt.win{color:var(--green)}
-.match .mt.tbd{color:var(--faint);font-weight:400;font-style:italic}
 .match .mt.win .mg{color:var(--green)}
 .match .mtime .fin{color:var(--green);font-size:12px}
 .match .grp{flex:0 0 auto;font-size:10px;font-weight:800;color:var(--faint);background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:3px 7px}
@@ -698,87 +697,20 @@ function todayISO(){
   return `${now.getFullYear()}-${p(now.getMonth()+1)}-${p(now.getDate())}`;
 }
 
-/* ===== סבך הנוקאאוט =====
-   משחקי ה-32 עם נבחרות אמיתיות; משאר הסיבובים השמות מתמלאים לבד לפי המנצחות.
-   {w:N} = המנצחת של משחק N. תאריך ושעה בשעון ישראל — לאימות מול הלוח הרשמי. */
-const KO = [
-  // שלב ה-32
-  {n:73,r:'R32',d:'2026-06-28',t:'19:00',h:'דרום אפריקה',a:'קנדה'},
-  {n:76,r:'R32',d:'2026-06-29',t:'20:00',h:'ברזיל',a:'יפן'},
-  {n:75,r:'R32',d:'2026-06-29',t:'22:00',h:'הולנד',a:'מרוקו'},
-  {n:74,r:'R32',d:'2026-06-30',t:'19:00',h:'גרמניה',a:'פרגוואי'},
-  {n:78,r:'R32',d:'2026-06-30',t:'21:00',h:'חוף השנהב',a:'נורווגיה'},
-  {n:79,r:'R32',d:'2026-07-01',t:'04:00',h:'מקסיקו',a:'אקוודור'},
-  {n:80,r:'R32',d:'2026-07-01',t:'19:00',h:'אנגליה',a:'קונגו'},
-  {n:82,r:'R32',d:'2026-07-01',t:'23:00',h:'בלגיה',a:'סנגל'},
-  {n:81,r:'R32',d:'2026-07-02',t:'03:00',h:'ארה"ב',a:'בוסניה'},
-  {n:84,r:'R32',d:'2026-07-02',t:'22:00',h:'ספרד',a:'אוסטריה'},
-  {n:83,r:'R32',d:'2026-07-03',t:'02:00',h:'פורטוגל',a:'קרואטיה'},
-  {n:85,r:'R32',d:'2026-07-03',t:'06:00',h:'שווייץ',a:'אלג\'יריה'},
-  {n:88,r:'R32',d:'2026-07-03',t:'20:00',h:'אוסטרליה',a:'מצרים'},
-  {n:86,r:'R32',d:'2026-07-03',t:'22:00',h:'ארגנטינה',a:'כף ורדה'},
-  {n:77,r:'R32',d:'2026-07-04',t:'00:00',h:'צרפת',a:'שבדיה'},
-  {n:87,r:'R32',d:'2026-07-04',t:'02:00',h:'קולומביה',a:'גאנה'},
-  // שמינית גמר
-  {n:90,r:'R16',d:'2026-07-04',t:'20:00',h:{w:73},a:{w:75}},
-  {n:89,r:'R16',d:'2026-07-04',t:'23:00',h:{w:74},a:{w:77}},
-  {n:91,r:'R16',d:'2026-07-05',t:'20:00',h:{w:76},a:{w:78}},
-  {n:92,r:'R16',d:'2026-07-05',t:'23:00',h:{w:79},a:{w:80}},
-  {n:94,r:'R16',d:'2026-07-06',t:'20:00',h:{w:82},a:{w:81}},
-  {n:93,r:'R16',d:'2026-07-06',t:'23:00',h:{w:84},a:{w:83}},
-  {n:95,r:'R16',d:'2026-07-07',t:'20:00',h:{w:88},a:{w:86}},
-  {n:96,r:'R16',d:'2026-07-07',t:'23:00',h:{w:85},a:{w:87}},
-  // רבע גמר
-  {n:97,r:'QF',d:'2026-07-09',t:'22:00',h:{w:89},a:{w:90}},
-  {n:98,r:'QF',d:'2026-07-10',t:'22:00',h:{w:93},a:{w:94}},
-  {n:99,r:'QF',d:'2026-07-10',t:'19:00',h:{w:91},a:{w:92}},
-  {n:100,r:'QF',d:'2026-07-11',t:'22:00',h:{w:95},a:{w:96}},
-  // חצי גמר
-  {n:101,r:'SF',d:'2026-07-14',t:'22:00',h:{w:97},a:{w:98}},
-  {n:102,r:'SF',d:'2026-07-15',t:'22:00',h:{w:99},a:{w:100}},
-  // גמר
-  {n:104,r:'F',d:'2026-07-19',t:'22:00',h:{w:101},a:{w:102}},
-];
-const KO_LABEL = {R32:'שלב ה-32', R16:'שמינית גמר', QF:'רבע גמר', SF:'חצי גמר', F:'גמר'};
-const _koByNum = {}; KO.forEach(m => _koByNum[m.n] = m);
-function koSide(side){                       // מחזיר שם נבחרת, או null אם עוד לא ידוע
-  if(typeof side === 'string') return side;
-  if(side && side.w) return koWinner(side.w);
-  return null;
-}
-function koWinner(n){                         // המנצחת של משחק n, או null אם טרם שוחק
-  const m = _koByNum[n]; if(!m) return null;
-  const h = koSide(m.h), a = koSide(m.a);
-  if(!h || !a) return null;
-  const res = RESULTS[pairKey(h, a)];
-  if(!res) return null;
-  const gh = res[normName(h)], ga = res[normName(a)];
-  if(gh==null || ga==null || gh===ga) return null;
-  return gh > ga ? h : a;
-}
-function allMatches(){                        // משחקי בתים + נוקאאוט, בפורמט אחיד
-  const group = FIXTURES.map(m => ({d:m.d, t:m.t, h:m.h, a:m.a, g:'בית '+m.g, ko:false}));
-  const ko = KO.map(m => ({d:m.d, t:m.t, h:koSide(m.h), a:koSide(m.a), g:KO_LABEL[m.r]||'נוקאאוט', ko:true}));
-  return group.concat(ko).sort((x,y)=> x.d<y.d?-1 : x.d>y.d?1 : (x.t||'').localeCompare(y.t||''));
-}
 function matchRow(m, highlight){
-  const bothKnown = m.h && m.a;
-  const res = bothKnown ? RESULTS[pairKey(m.h, m.a)] : null;
+  const res = RESULTS[pairKey(m.h, m.a)];
   const has = !!res;
   const gh = has ? res[normName(m.h)] : null;
   const ga = has ? res[normName(m.a)] : null;
   const winH = has && gh > ga, winA = has && ga > gh;
-  const left = has ? `<b class="fin">סופי</b><small>${m.g}</small>`
-                   : `<b>${m.t||''}</b><small>${m.g}</small>`;
+  const left = has ? `<b class="fin">סופי</b><small>בית ${m.g}</small>`
+                   : `<b>${m.t}</b><small>בית ${m.g}</small>`;
   const goal = g => g==null ? '' : `<span class="mg">${g}</span>`;
-  const side = (name, win, g) => name
-    ? `<div class="mt${win?' win':''}"><span class="fl">${getFlag(name)}</span><span class="mn">${name}</span>${goal(g)}</div>`
-    : `<div class="mt tbd"><span class="mn">יוכרע</span></div>`;
   return `<div class="match${highlight?' in-today':''}${has?' done':''}">
     <div class="mtime">${left}</div>
     <div class="mteams">
-      ${side(m.h, winH, gh)}
-      ${side(m.a, winA, ga)}
+      <div class="mt${winH?' win':''}"><span class="fl">${getFlag(m.h)}</span><span class="mn">${m.h}</span>${goal(gh)}</div>
+      <div class="mt${winA?' win':''}"><span class="fl">${getFlag(m.a)}</span><span class="mn">${m.a}</span>${goal(ga)}</div>
     </div>
   </div>`;
 }
@@ -786,20 +718,19 @@ function matchRow(m, highlight){
 function renderToday(){
   const wrap = document.getElementById('today-wrap');
   const today = todayISO();
-  const M = allMatches();
-  const games = M.filter(m => m.d === today);   // כל משחקי היום, כולל אלו שהסתיימו
+  const games = FIXTURES.filter(m => m.d === today);
   let inner, title;
   if(games.length){
     title = 'משחקי היום';
     inner = games.map(m => matchRow(m, false)).join('');
   } else {
     title = 'המשחקים הקרובים';
-    const nd = [...new Set(M.filter(m => m.d > today).map(m => m.d))].sort()[0];
+    const nd = [...new Set(FIXTURES.filter(m => m.d > today).map(m => m.d))].sort()[0];
     if(nd){
-      const ng = M.filter(m => m.d === nd);
+      const ng = FIXTURES.filter(m => m.d === nd);
       inner = `<div class="none">אין משחקים היום. הקרובים — ${fmtDay(nd)}:</div>` + ng.map(m => matchRow(m, false)).join('');
     } else {
-      inner = `<div class="none">המונדיאל הסתיים — תודה שהשתתפתם! 🏆</div>`;
+      inner = `<div class="none">שלב הבתים הסתיים — עקבו אחרי שלבי הנוקאאוט.</div>`;
     }
   }
   wrap.innerHTML = `<div class="today-block">
@@ -811,7 +742,7 @@ function renderSchedule(){
   const wrap = document.getElementById('sched-wrap');
   const today = todayISO();
   let html = '', lastDay = '';
-  allMatches().forEach(m=>{
+  FIXTURES.forEach(m=>{
     if(m.d !== lastDay){ html += `<div class="day-head"><span>${fmtDay(m.d)}</span></div>`; lastDay = m.d; }
     html += matchRow(m, m.d === today);
   });
